@@ -10,26 +10,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2️⃣ Set up uv
       - name: Set up uv
         uses: astral-sh/setup-uv@v5
-      
+
+      # 3️⃣ Create virtual environment
       - name: Create virtual environment
         run: uv venv
 
+      # 4️⃣ Cache uv dependencies
       - name: Cache uv dependencies
         uses: actions/cache@v4
-        id: cache-uv # Give the step an id to check its output
+        id: cache-uv
         with:
           path: ~/.cache/uv
           key: cache-4a7e659
+          cache-dependency-path: ''  # prevents warnings about missing files
 
+      # 5️⃣ Install dependencies from requirements.txt
       - name: Install dependencies
-        run: uv pip install -r requirements.txt
+        run: uv pip install -r $GITHUB_WORKSPACE/requirements.txt
 
-      - name: prime-cache-4a7e659
+      # 6️⃣ Prime cache message
+      - name: Prime cache
         run: |
           if [[ "${{ steps.cache-uv.outputs.cache-hit }}" == "true" ]]; then
             echo "Cache hit! Dependencies were restored."
